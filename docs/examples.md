@@ -282,8 +282,8 @@ jobs:
       - name: Get Latest Swagger UI Release
         id: swagger-ui
         run: |
-          echo ::set-output name=release_tag::$(curl -sL https://api.github.com/repos/swagger-api/swagger-ui/releases/latest | jq -r ".tag_name")
-          echo ::set-output name=current_tag::$(<swagger-ui.version)
+          echo release_tag=$(curl -sL https://api.github.com/repos/swagger-api/swagger-ui/releases/latest | jq -r ".tag_name") >> $GITHUB_OUTPUT
+          echo current_tag=$(<swagger-ui.version) >> $GITHUB_OUTPUT
       - name: Update Swagger UI
         if: steps.swagger-ui.outputs.current_tag != steps.swagger-ui.outputs.release_tag
         env:
@@ -475,7 +475,7 @@ jobs:
           args: --exit-code --recursive --in-place --aggressive --aggressive .
       - name: Set autopep8 branch name
         id: vars
-        run: echo ::set-output name=branch-name::"autopep8-patches/${{ github.head_ref }}"
+        run: echo branch-name="autopep8-patches/${{ github.head_ref }}" >> $GITHUB_OUTPUT
       - name: Create Pull Request
         if: steps.autopep8.outputs.exit-code == 2
         uses: peter-evans/create-pull-request@v4
@@ -532,8 +532,8 @@ The recommended method is to use [`set-output`](https://docs.github.com/en/actio
       - name: Set output variables
         id: vars
         run: |
-          echo ::set-output name=pr_title::"[Test] Add report file $(date +%d-%m-%Y)"
-          echo ::set-output name=pr_body::"This PR was auto-generated on $(date +%d-%m-%Y) \
+          echo pr_title="[Test] Add report file $(date +%d-%m-%Y)" >> $GITHUB_OUTPUT
+          echo pr_body="This PR was auto-generated on $(date +%d-%m-%Y) \ >> $GITHUB_OUTPUT
             by [create-pull-request](https://github.com/peter-evans/create-pull-request)."
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
@@ -554,7 +554,7 @@ The content must be [escaped to preserve newlines](https://github.community/t/se
           body="${body//'%'/'%25'}"
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}" 
-          echo ::set-output name=body::$body
+          echo body=$body >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
